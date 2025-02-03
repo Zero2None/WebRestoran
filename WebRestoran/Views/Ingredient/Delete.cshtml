@@ -1,0 +1,45 @@
+﻿@model Ingredient
+
+@{
+    ViewData["Title"] = "Delete Ingredient";
+}
+
+<h1>Delete Ingredient</h1>
+
+<h3>Are you sure you want to delete <strong>@Model.IngredientName</strong>?</h3>
+
+@if (Model.FoodIngredients != null && Model.FoodIngredients.Count() > 0)
+{
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> This ingredient is used in the following food products:
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Food ID</th>
+                <th>Food Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var foodIngredient in Model.FoodIngredients)
+            {
+                <tr>
+                    <td>@foodIngredient.Food.FoodId</td>
+                    <td>@foodIngredient.Food.FoodName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="alert alert-danger">
+        <strong>Deleting this ingredient may affect existing food products!</strong>
+    </div>
+}
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IngredientId" />
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

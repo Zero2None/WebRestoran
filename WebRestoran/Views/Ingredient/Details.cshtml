@@ -1,0 +1,43 @@
+﻿@model Ingredient
+@{
+	ViewData["Title"] = "Details";
+}
+<h1>@Model.IngredientName Details</h1>
+
+@if (Model.FoodIngredients != null && Model.FoodIngredients.Count() > 1)
+{
+    <h2>Related Food Products</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Food ID</th>
+                <th>Food Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                @* <th>Actions</th> *@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var foodIngredient in Model.FoodIngredients)
+            {
+                <tr>
+                    <td>@foodIngredient.Food.FoodId</td>
+                    <td>@foodIngredient.Food.FoodName</td>
+                    <td>@foodIngredient.Food.Description</td>
+                    <td>@foodIngredient.Food.Price</td>
+                    @* <td>
+                        <a asp-controller="Food" asp-action="Details" asp-route-id="@foodIngredient.Food.FoodId" class="btn btn-info btn-sm">View</a>   //link na food controller-details, implementirati kasnije
+                    </td> *@
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No associated food products.</p>
+}
+<div>
+	<a asp-action="Index">Back to List</a>
+</div>

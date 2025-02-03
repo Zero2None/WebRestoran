@@ -1,0 +1,35 @@
+﻿@model IEnumerable<WebRestoran.Models.Ingredient>
+
+@{
+    ViewData["Title"] = "Ingredients";
+}
+
+<h2>Ingredients List</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Ingredient</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ingredient ID</th>
+            <th>Ingredient Name</th>
+            @* <th>Actions</th> *@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Ingredient i in Model)
+        {
+            <tr>
+                <td>@i.IngredientId</td>
+                <td>@i.IngredientName</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@i.IngredientId" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-id="@i.IngredientId" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@i.IngredientId" class="btn btn-danger btn-sm">Delete</a>                                      
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
