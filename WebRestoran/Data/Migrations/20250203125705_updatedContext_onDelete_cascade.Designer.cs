@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebRestoran.Data;
 
@@ -11,9 +12,11 @@ using WebRestoran.Data;
 namespace WebRestoran.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250203125705_updatedContext_onDelete_cascade")]
+    partial class updatedContext_onDelete_cascade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -501,7 +504,12 @@ namespace WebRestoran.Data.Migrations
                     b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
                     b.HasKey("FoodId", "IngredientId");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("IngredientId");
 
@@ -865,7 +873,7 @@ namespace WebRestoran.Data.Migrations
             modelBuilder.Entity("WebRestoran.Models.Food", b =>
                 {
                     b.HasOne("WebRestoran.Models.Category", "Category")
-                        .WithMany("Products")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -875,13 +883,17 @@ namespace WebRestoran.Data.Migrations
 
             modelBuilder.Entity("WebRestoran.Models.FoodIngredient", b =>
                 {
+                    b.HasOne("WebRestoran.Models.Category", null)
+                        .WithMany("FoodIngredients")
+                        .HasForeignKey("CategoryId");
+
                     b.HasOne("WebRestoran.Models.Food", "Food")
                         .WithMany("FoodIngredients")
                         .HasForeignKey("FoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebRestoran.Models.Ingredient", "Ingredient")
+                    b.HasOne("WebRestoran.Models.Ingredient", "Ingredients")
                         .WithMany("FoodIngredients")
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -889,7 +901,7 @@ namespace WebRestoran.Data.Migrations
 
                     b.Navigation("Food");
 
-                    b.Navigation("Ingredient");
+                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("WebRestoran.Models.Order", b =>
@@ -929,7 +941,7 @@ namespace WebRestoran.Data.Migrations
 
             modelBuilder.Entity("WebRestoran.Models.Category", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("FoodIngredients");
                 });
 
             modelBuilder.Entity("WebRestoran.Models.Food", b =>

@@ -6,6 +6,18 @@ using WebRestoran.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+// Register the generic repository for DI
+builder.Services.AddScoped(typeof(IRepo<>), typeof(Repository<>));
+
+// Register other dependencies
+builder.Services.AddScoped<IRepo<Food>, Repository<Food>>();
+builder.Services.AddScoped<IRepo<Ingredient>, Repository<Ingredient>>();
+builder.Services.AddScoped<IRepo<Category>, Repository<Category>>();
+builder.Services.AddScoped<IRepo<FoodIngredient>, Repository<FoodIngredient>>();
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));

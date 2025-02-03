@@ -7,6 +7,7 @@ namespace WebRestoran.Models
 {
     public class Food
     {
+        
         public int FoodId { get; set; }
         public string FoodName { get; set; }
         public string Description { get; set; }
@@ -30,7 +31,9 @@ namespace WebRestoran.Models
 
         [ValidateNever]
         public ICollection<FoodIngredient>? FoodIngredients { get; set; } //proizvod moze imati vise sastojaka
-
-
+        public Food()
+        {
+            FoodIngredients = new List<FoodIngredient>();   //inicijalizacija liste sastojaka 
+        }
     }
 }

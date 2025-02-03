@@ -6,6 +6,7 @@ namespace WebRestoran.Models
     {
         public  Expression<Func<T, Object>> OrderBy { get; set; } = null!;  //null!- nema nullreferenceexception
         public Expression<Func<T, Object>> Where { get; set; } = null!;
+        public List<Expression<Func<T, object>>> IncludesExpressions { get; set; } = new(); //lista izraza-bolje od stringa
 
         private string[] includes=Array.Empty<string>();    //kada jedan entitet ima vise entiteta, npr. food ima foodingredients, pa se koristi include
         public string Includes

@@ -30,9 +30,10 @@ namespace WebRestoran.Data
                 .HasOne(fi => fi.Food)
                 .WithMany(f => f.FoodIngredients)
                 .HasForeignKey(fi => fi.FoodId);
+                //.OnDelete(DeleteBehavior.Cascade);  // Promjena iz Restrict to Cascade - briše sve sastojke jela kada se jelo obriše
 
             builder.Entity<FoodIngredient>()
-                .HasOne(fi => fi.Ingredients)
+                .HasOne(fi => fi.Ingredient)    //bug fix fi.ingredients -> fi.Ingredient
                 .WithMany(i => i.FoodIngredients)
                 .HasForeignKey(fi => fi.IngredientId);
 

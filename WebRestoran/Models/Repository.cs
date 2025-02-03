@@ -30,43 +30,14 @@ namespace WebRestoran.Models
 
         public async Task DeleteAsync(int id)
         {
-            //var options = new QueryOptions<T>(); // Create a default QueryOptions object
-            //var entity = await GetByIdAsync(id, options);
-            //T entity = await _dbSet.FindAsync(id);
-            //if (entity != null)
-            //{
-            //    _dbSet.Remove(entity);
-            //    await _context.SaveChangesAsync();
-            //}
-
-
-            //var entity = await _dbSet
-            //    .Include(i => _context.Set<FoodIngredient>().Where(fi => fi.IngredientId == id))
-            //    .FirstOrDefaultAsync(i => i.IngredientId == id);
-
-            //if (entity != null)
-            //{
-            //    _context.Set<FoodIngredient>().RemoveRange(entity.FoodIngredients); // Remove references
-            //    _dbSet.Remove(entity); // Remove ingredient
-            //    await _context.SaveChangesAsync();
-            //}
-
-            //test za brisanje sastojka
-            var entity = await _dbSet.FindAsync(id);
+            T entity = await _dbSet.FindAsync(id);
             if (entity != null)
             {
-                // Ensure related FoodIngredient records are deleted first
-                var foodIngredients = await _context.Set<FoodIngredient>()
-                                                    .Where(fi => fi.IngredientId == id)
-                                                    .ToListAsync(); // Executes the query immediately
-
-                _context.Set<FoodIngredient>().RemoveRange(foodIngredients); // Safely remove related records
-                _dbSet.Remove(entity); // Remove the ingredient
-                await _context.SaveChangesAsync(); // Commit changes to database
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
             }
-
         }
-
+    
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
@@ -75,12 +46,7 @@ namespace WebRestoran.Models
         public async Task<T> GetByIdAsync(int id, QueryOptions<T> options)
         {
             IQueryable<T> query = _dbSet;
-
-            //if (options.HasWhere)
-            //{
-            //    query = query.Where(options.Where);   //compiler ne zna da je options.Where Expression<Func<T, bool>>, pa se mora koristiti lambda
-            //}
-
+                        
             if (options.HasWhere)
             {
                 var whereExpression = Expression.Lambda<Func<T, bool>>(options.Where.Body, options.Where.Parameters);
@@ -91,14 +57,19 @@ namespace WebRestoran.Models
             {
                 query = query.OrderBy(options.OrderBy);
             }
+
             foreach (string include in options.GetIncludes())
             {
-                query = query.Include(include);
+                query = query.Include(include.Trim());
             }
-
             var key = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.FirstOrDefault();
             string primaryKeyName = key?.Name;
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, primaryKeyName) == id);
+        }
+
+        public Task<IEnumerable<T>> GetAllByIdAsync<TKey>(TKey id, string propertyName, QueryOptions<T> options)
+        {
+            throw new NotImplementedException();
         }
     }
 }

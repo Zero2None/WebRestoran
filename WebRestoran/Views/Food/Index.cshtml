@@ -1,0 +1,71 @@
+﻿@model IEnumerable<WebRestoran.Models.Food>
+
+@{
+    ViewData["Title"] = "Food List";
+}
+
+<h1>Food List</h1>
+
+@functions {
+    string GetDeleteModalId(Food prod)
+    {
+        return "#deleteModal" + prod.FoodId;
+    }
+
+    string GetModalId(Food prod)
+    {
+        return "deleteModal" + prod.FoodId;
+    }
+}
+
+<h2>WebRestoran Menu</h2>
+<a asp-action="AddEdit" asp-controller="Food" class="btn btn-primary">Create New Item</a>
+
+<div class="row">
+    @foreach (Food prod in Model)
+    {
+        <div class="col-md-4">
+            <div class="card" style="width: 20rem;">
+                <img src="@Url.Content("~/images/" + (prod.ImageUrl ?? "default.jpg"))"
+                     class="card-img-top fixed-image-height"
+                     alt="@prod.Description">
+                <div class="card-body">
+                    <h5 class="card-title">@prod.FoodName</h5>
+                    <p class="card-text">@prod.Description</p>
+                    <p class="card-text">@($"{prod.Price:F2} €")</p>    @* eksplicitno euri *@ 
+                    <p class="card-text">Quantity In Stock: @prod.Stock</p>
+
+                    
+                    <a class="btn btn-info" asp-controller="Food" asp-action="AddEdit" asp-route-id="@prod.FoodId">
+                        <i class="bi bi-pen-fill">Edit</i>
+                    </a>
+
+                   
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@GetDeleteModalId(prod)">
+                        <i class="bi bi-trash">Delete</i>
+                    </button>
+
+                   
+                    <div class="modal fade" id="@GetModalId(prod)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete @prod.FoodName?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                                    <form asp-action="Delete" asp-controller="Food" method="post">
+                                        <input type="hidden" name="id" value="@prod.FoodId" />
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
