@@ -46,7 +46,6 @@ namespace WebRestoran.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            //string - staro
             var ingredient = await ingredientData.GetByIdAsync(id, new QueryOptions<Ingredient>
             {
                 IncludesExpressions = new List<Expression<Func<Ingredient, object>>>
@@ -72,7 +71,6 @@ namespace WebRestoran.Controllers
             return View(ingredient);
         }
 
-
         //brisanje sastojka
         public async Task<IActionResult> Delete(int id)
         {
@@ -86,15 +84,6 @@ namespace WebRestoran.Controllers
         {
             await ingredientData.DeleteAsync(id);           
             return RedirectToAction(nameof(Index));
-        }
-
-        
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Delete(Ingredient ingredient)
-        //{
-        //    await ingredientData.DeleteAsync(ingredient.IngredientId);
-        //    return RedirectToAction(nameof(Index));
-        //}
+        }          
     }
 }

@@ -1,0 +1,94 @@
+﻿@model IEnumerable<WebRestoran.Models.Order>
+
+@{
+    ViewData["Title"] = "Your Orders";
+}
+
+<h1 class="mb-4">Your Orders</h1>
+
+@if (Model == null || !Model.Any())
+{
+    <p class="alert alert-warning">You have not placed any orders yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Order Date</th>
+                    <th>Total (€)</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.OrderBy(o => o.OrderDate))
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@order.TotalAmount.ToString("0.00") €</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#orderDetails_@order.OrderId">
+                                View Items
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modals for Order Items -->
+    @foreach (var order in Model.OrderBy(o => o.OrderDate))
+    {
+        <div class="modal fade" id="orderDetails_@order.OrderId" tabindex="-1" aria-labelledby="orderDetailsLabel_@order.OrderId" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderDetailsLabel_@order.OrderId">Order #@order.OrderId Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (order.OrderItems != null && order.OrderItems.Any())
+                        {
+                            <table class="table table-striped text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Food Item</th>
+                                        <th>Quantity</th>
+                                        <th>Price (€)</th>
+                                        <th>Subtotal (€)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>@(item.Food != null ? item.Food.FoodName : "Unknown")</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.Price.ToString("0.00")</td>
+                                            <td>@(item.Price * item.Quantity).ToString("0.00") €</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <div class="text-end">
+                                <strong>Total: @order.TotalAmount.ToString("0.00") €</strong>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="alert alert-warning">No items found for this order.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+}
+
+
+

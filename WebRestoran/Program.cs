@@ -27,6 +27,12 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20); // session expires after 20 minutes of inactivity
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,8 +49,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
-app.UseAuthorization();
+app.UseStaticFiles();   
+app.UseSession();   //enable session state
+app.UseAuthorization(); //enable authorization
 
 app.MapStaticAssets();
 

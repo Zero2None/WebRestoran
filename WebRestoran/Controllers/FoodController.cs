@@ -46,7 +46,7 @@ namespace WebRestoran.Controllers
             }
             else
             {
-                //string - staro
+                //string
                 var product = await _foodRepo.GetByIdAsync(id, new QueryOptions<Food> { Includes = "FoodIngredients.Ingredient, Category" });
 
                 if (product == null)

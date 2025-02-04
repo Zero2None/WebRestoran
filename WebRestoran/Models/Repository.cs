@@ -37,16 +37,52 @@ namespace WebRestoran.Models
                 await _context.SaveChangesAsync();
             }
         }
-    
+
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllAsync(QueryOptions<T> options = null)
+        {
+            IQueryable<T> query = _dbSet.AsQueryable();
+
+            if (options?.IncludesExpressions != null)
+            {
+                foreach (var include in options.IncludesExpressions)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            if (options?.Where != null)
+            {
+                Console.WriteLine($"Debug Where Expression: {options.Where}"); 
+            }
+            if (options?.Where != null)
+            {
+                if (options.Where is Expression<Func<T, bool>> whereExpression)
+                {
+                    query = query.Where(whereExpression);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid Where expression. Must return a boolean condition.");
+                }
+            }
+
+            if (options?.OrderBy != null)
+            {
+                query = query.OrderBy(options.OrderBy);
+            }
+
+            return await query.ToListAsync();
+        }
+
         public async Task<T> GetByIdAsync(int id, QueryOptions<T> options)
         {
             IQueryable<T> query = _dbSet;
-                        
+
             if (options.HasWhere)
             {
                 var whereExpression = Expression.Lambda<Func<T, bool>>(options.Where.Body, options.Where.Parameters);
@@ -67,9 +103,33 @@ namespace WebRestoran.Models
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, primaryKeyName) == id);
         }
 
-        public Task<IEnumerable<T>> GetAllByIdAsync<TKey>(TKey id, string propertyName, QueryOptions<T> options)
+        public async Task<IEnumerable<T>> GetAllByIdAsync<TKey>(TKey id, string propertyName, QueryOptions<T> options)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = _dbSet;
+
+            if (options.HasWhere)
+            {
+                //test
+                //        if (options.Where != null)
+                //        {
+                //            var whereExpression = Expression.Lambda<Func<T, bool>>(options.Where.Body, options.Where.Parameters);
+                //            query = query.Where(whereExpression);
+                //        }
+                query = query.Where(options.Where);
+            }
+
+            if (options.HasOrderBy)
+            {
+                query = query.OrderBy(options.OrderBy);
+            }
+
+            foreach (string include in options.GetIncludes())
+            {
+                query = query.Include(include);
+            }
+            query = query.Where(e => EF.Property<TKey>(e, propertyName).Equals(id));
+
+            return await query.ToListAsync();
         }
     }
 }
