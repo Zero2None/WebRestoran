@@ -88,11 +88,28 @@ namespace WebRestoran.Controllers
 
                 string uniqueFileName = Guid.NewGuid().ToString() + "_" + product.ImageFile.FileName;
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                int retryCount = 3;
+                while (retryCount > 0)
                 {
-                    await product.ImageFile.CopyToAsync(fileStream);
+                    try
+                    {
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await product.ImageFile.CopyToAsync(fileStream);
+                        }
+                        break; // Exit loop if successful
+                    }
+                    catch (IOException)
+                    {
+                        retryCount--;
+                        if (retryCount == 0) throw; // Rethrow exception if retries are exhausted
+                        await Task.Delay(1000); // Wait for 1 second before retrying
+                    }
                 }
+                
                 product.ImageUrl = uniqueFileName;
+                await _foodRepo.UpdateAsync(product);
+                await _context.SaveChangesAsync();
             }
 
             if (product.FoodId == 0)

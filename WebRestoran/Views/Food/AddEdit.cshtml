@@ -24,7 +24,7 @@
 
     <div class="form-group">
         <label asp-for="Price"></label>
-        <input asp-for="Price" class="form-control" step="0.01" placeholder="Enter price in €" />
+        <input asp-for="Price" class="form-control" step="0.01" placeholder="Enter price in €" data-val="true" data-val-price="Please enter a valid price." />
         <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
@@ -87,19 +87,22 @@
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const form = document.querySelector("form");
-                form.addEventListener("submit", function (event) {
-                    const checkboxes = document.querySelectorAll("input[name='ingredientIds']:checked");
-                    if (checkboxes.length === 0) {
-                        alert("At least one ingredient must be selected.");
-                        event.preventDefault();
-                    }
-                });
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", function (event) {
+                const checkboxes = document.querySelectorAll("input[name='ingredientIds']:checked");
+                if (checkboxes.length === 0) {
+                    alert("At least one ingredient must be selected.");
+                    event.preventDefault();
+                }
             });
-        </script>
-    }
+
+            $.validator.addMethod("price", function(value, element) {
+                return this.optional(element) || /^(\d+([.,]\d{1,2})?)$/.test(value);
+            }, "Please enter a valid price.");
+        });
+    </script>
 }
