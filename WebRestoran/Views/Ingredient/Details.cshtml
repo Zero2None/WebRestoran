@@ -1,40 +1,43 @@
-﻿@model Ingredient
+﻿@model WebRestoran.Models.Ingredient
+
 @{
-	ViewData["Title"] = "Details";
+    ViewData["Title"] = "Ingredient Details";
 }
-<h1>@Model.IngredientName Details</h1>
 
-@if (Model.FoodIngredients != null && Model.FoodIngredients.Count() > 1)
-{
-    <h2>Related Food Products</h2>
+<h1 class="mb-4">Ingredient Details</h1>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Food ID</th>
-                <th>Food Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                @* <th>Actions</th> *@
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var foodIngredient in Model.FoodIngredients)
-            {
-                <tr>
-                    <td>@foodIngredient.Food.FoodId</td>
-                    <td>@foodIngredient.Food.FoodName</td>
-                    <td>@foodIngredient.Food.Description</td>
-                    <td>@foodIngredient.Food.Price</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No associated food products.</p>
-}
 <div>
-	<a asp-action="Index">Back to List</a>
+    <h2>@Model.IngredientName</h2>
+    <h3>Associated Foods</h3>
+    @if (Model.FoodIngredients == null || !Model.FoodIngredients.Any())
+    {
+        <p class="alert alert-warning">No foods found for this ingredient.</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Food ID</th>
+                    <th>Food Name</th>
+                    <th>Description</th>
+                    <th>Price (€)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var foodIngredient in Model.FoodIngredients)
+                {
+                    <tr>
+                        <td>@foodIngredient.Food.FoodId</td>
+                        <td>@foodIngredient.Food.FoodName</td>
+                        <td>@foodIngredient.Food.Description</td>
+                        <td>@foodIngredient.Food.Price.ToString("0.00") €</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
 </div>

@@ -57,10 +57,6 @@ namespace WebRestoran.Models
 
             if (options?.Where != null)
             {
-                Console.WriteLine($"Debug Where Expression: {options.Where}"); 
-            }
-            if (options?.Where != null)
-            {
                 if (options.Where is Expression<Func<T, bool>> whereExpression)
                 {
                     query = query.Where(whereExpression);
@@ -98,38 +94,47 @@ namespace WebRestoran.Models
             {
                 query = query.Include(include.Trim());
             }
+                     
             var key = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.FirstOrDefault();
             string primaryKeyName = key?.Name;
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, primaryKeyName) == id);
         }
 
-        public async Task<IEnumerable<T>> GetAllByIdAsync<TKey>(TKey id, string propertyName, QueryOptions<T> options)
+        //test funkcija
+        //public async Task<IEnumerable<T>> GetAllByIdAsync<TKey>(TKey id, string propertyName, QueryOptions<T> options)
+        //{
+        //    IQueryable<T> query = _dbSet;
+
+        //    if (options.HasWhere)
+        //    {
+        //        //test
+        //        //        if (options.Where != null)
+        //        //        {
+        //        //            var whereExpression = Expression.Lambda<Func<T, bool>>(options.Where.Body, options.Where.Parameters);
+        //        //            query = query.Where(whereExpression);
+        //        //        }
+        //        query = query.Where(options.Where);
+        //    }
+
+        //    if (options.HasOrderBy)
+        //    {
+        //        query = query.OrderBy(options.OrderBy);
+        //    }
+
+        //    foreach (string include in options.GetIncludes())
+        //    {
+        //        query = query.Include(include);
+        //    }
+        //    query = query.Where(e => EF.Property<TKey>(e, propertyName).Equals(id));
+
+        //    return await query.ToListAsync();
+        //}
+        public async Task<IEnumerable<Order>> GetAllOrdersWithItemsAsync()
         {
-            IQueryable<T> query = _dbSet;
-
-            if (options.HasWhere)
-            {
-                //test
-                //        if (options.Where != null)
-                //        {
-                //            var whereExpression = Expression.Lambda<Func<T, bool>>(options.Where.Body, options.Where.Parameters);
-                //            query = query.Where(whereExpression);
-                //        }
-                query = query.Where(options.Where);
-            }
-
-            if (options.HasOrderBy)
-            {
-                query = query.OrderBy(options.OrderBy);
-            }
-
-            foreach (string include in options.GetIncludes())
-            {
-                query = query.Include(include);
-            }
-            query = query.Where(e => EF.Property<TKey>(e, propertyName).Equals(id));
-
-            return await query.ToListAsync();
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Food)
+                .ToListAsync();
         }
     }
 }

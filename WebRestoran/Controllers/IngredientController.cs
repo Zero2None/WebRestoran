@@ -41,7 +41,6 @@ namespace WebRestoran.Controllers
             return View(ingredient);
         }
 
-
         //izmjena sastojka
         [HttpGet]
         public async Task<IActionResult> Edit(int id)

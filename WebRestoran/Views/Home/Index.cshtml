@@ -1,8 +1,50 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<WebRestoran.Models.Food>
+
+@{
+    ViewData["Title"] = "Welcome to WebRestoran";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="landing-container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to WebRestoran</h1>
+            <p>Delicious food delivered to your doorstep</p>
+            <a href="@Url.Action("Index", "Food")" class="btn btn-primary">Explore Menu</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="about-content">
+            <h2>About Us</h2>
+            <p>Experience the best flavors crafted with fresh ingredients and passion.</p>
+        </div>
+    </section>
+
+    <!-- Featured Menu -->
+    <section class="featured-menu">
+        <h2>Featured Dishes</h2>
+        <div class="food-menu-container">
+            @foreach (var item in Model.Take(3))
+            {
+                <div class="food-menu-card">
+                    <img src="~/images/@item.ImageUrl" alt="@item.FoodName">
+                    <div class="food-menu-card-body">
+                        <h5 class="food-menu-card-title">@item.FoodName</h5>
+                        <p>@item.Description</p>
+                        <p><strong>€@item.Price.ToString("0.00")</strong></p>
+                        @* <a href="@Url.Action("Details", "Food", new { id = item.FoodId })" class="btn btn-outline-dark">View Details</a> -implementirati kasnije *@
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact">
+        <h2>Contact Us</h2>
+        <p>Have questions? Get in touch with us.</p>
+        <a href="mailto:contact@webrestoran.com" class="btn btn-info">Email Us</a>
+    </section>
 </div>

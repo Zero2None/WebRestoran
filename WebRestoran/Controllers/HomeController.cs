@@ -6,16 +6,22 @@ namespace WebRestoran.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        //private readonly ILogger<HomeController> _logger;
+        private readonly IRepo<Food> _foodRepo;
 
-        public HomeController(ILogger<HomeController> logger)
+        //public HomeController(ILogger<HomeController> logger, IRepo<Food> foodRepo) 
+        //{
+        //    _logger = logger;
+        //    _foodRepo = foodRepo;
+        //}
+        public HomeController(IRepo<Food> foodRepo)
         {
-            _logger = logger;
+            _foodRepo = foodRepo;
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var foodItems = await _foodRepo.GetAllAsync();
+            return View("Index", foodItems);
         }
 
         public IActionResult Privacy()
@@ -27,6 +33,12 @@ namespace WebRestoran.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Landing()
+        {
+            var foodItems = _foodRepo.GetAllAsync().Result; 
+            return View(foodItems);
         }
     }
 }

@@ -162,20 +162,10 @@ namespace WebRestoran.Controllers
 
         [HttpGet]
         [Authorize]
+
         public async Task<IActionResult> ViewOrders()
         {
-            var userId = _userManager.GetUserId(User);
-
-            var userOrders = await _orderRepo.GetAllByIdAsync(userId, "UserId", new QueryOptions<Order>
-            {
-                Where = o => o.UserId == userId,
-                IncludesExpressions = new List<Expression<Func<Order, object>>>
-                {
-                    o => o.OrderItems,
-                    o => o.OrderItems.Select(oi => (object)oi.Food)
-                }
-            });
-
+            var userOrders = await _orderRepo.GetAllOrdersWithItemsAsync();
             return View(userOrders);
         }
 
